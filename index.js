@@ -11,7 +11,7 @@ connectDB();
 app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
-app.use("/user", userRouter); // Updated route to include '/user' for clarity
+app.use("/", userRouter); // Updated route to include '/user' for clarity
 app.listen(PORT, () => {
     console.log(`Server is running on localhost:${PORT}`);
 });
