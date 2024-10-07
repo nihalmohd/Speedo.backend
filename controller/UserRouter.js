@@ -9,20 +9,26 @@ userRouter.get('/', (req, res) => {
 });
 
 userRouter.post('/login', async (req, res) => {
-    try {
-        const { email, password } = req.body; 
+  try {
+      const { email, password } = req.body;
+      console.log(email, password);
 
-        const foundedUser = await UserData.findOne({ email });
-        if (!foundedUser) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        if(password = foundedUser.password){
+      const foundedUser = await UserData.findOne({ email });  // Use findOne instead of find
+      console.log(foundedUser);
+
+      if (!foundedUser) {
+          return res.status(404).json({ message: "User not found" });
+      }
+
+      if (password === foundedUser.password) {  // Use === for comparison
           res.status(200).json({ message: "Login successful", user: foundedUser });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal server error" });
-    }
+      } else {
+          res.status(400).json({ message: "Invalid password" });
+      }
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+  }
 });
 userRouter.post('/mapdata', async (req, res) => {
   try {

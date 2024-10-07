@@ -16,6 +16,5 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const UserData = mongoose.model('User', userSchema);
-
+const UserData = mongoose.model('User', userSchema);  // Use 'User' or 'Users' based on your MongoDB collection
 export default UserData;
