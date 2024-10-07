@@ -29,7 +29,6 @@ const mapDataSchema = new mongoose.Schema({
   
 });
 
-// Create a model from the schema
 const MapData = mongoose.model('MapData', mapDataSchema);
 
 export default MapData;
