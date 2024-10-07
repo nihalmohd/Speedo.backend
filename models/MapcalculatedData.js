@@ -6,6 +6,10 @@ const mapDataSchema = new mongoose.Schema({
     ref: 'User',  
     required: true,  
   },
+  tripName:{
+    type:String,
+    required:true
+  },
   totalDistanceTravelled: {
     type: Number,
     required: true,  
