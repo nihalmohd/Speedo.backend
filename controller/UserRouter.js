@@ -32,9 +32,9 @@ userRouter.post('/Login', async (req, res) => {
 });
 userRouter.post('/mapdata', async (req, res) => {
   try {
-    const { userId,tripName, totalDistanceTravelled, totalDuration, overSpeedDuration, overSpeedDistance, stoppedDuration } = req.body;
+    const { userId, tripName, totalDistanceTravelled, totalDuration, overSpeedDuration, overSpeedDistance, stoppedDuration, locations } = req.body;
 
-    console.log(userId,tripName, totalDistanceTravelled, totalDuration, overSpeedDuration, overSpeedDistance, stoppedDuration );
+    console.log(userId, tripName, totalDistanceTravelled, totalDuration, overSpeedDuration, overSpeedDistance, stoppedDuration, locations);
     
     const user = await UserData.findById(userId);
     if (!user) {
@@ -48,7 +48,8 @@ userRouter.post('/mapdata', async (req, res) => {
       totalDuration,
       overSpeedDuration,
       overSpeedDistance,
-      stoppedDuration
+      stoppedDuration,
+      locations, 
     });
 
     const savedMapData = await newMapData.save();
@@ -63,11 +64,11 @@ userRouter.post('/mapdata', async (req, res) => {
   }
 });
 
+
 userRouter.get('/mapdata/:userId', async (req, res) => {
   try {
       const { userId } = req.params;
 
-      // Find all map data for the given userId
       const mapData = await MapData.find({ userId });
 
       if (!mapData || mapData.length === 0) {
@@ -78,6 +79,68 @@ userRouter.get('/mapdata/:userId', async (req, res) => {
   } catch (error) {
       console.error('Error fetching map data:', error);
       res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+userRouter.get('/gettrip/:id', async (req, res) => {
+  console.log(req.params);
+
+  try {
+      const { id } = req.params;
+
+      
+      const trip = await MapData.findById(id);
+
+      if (!trip) {
+          return res.status(404).json({ message: 'Trip not found' });
+      }
+
+      
+      res.status(200).json({ message: "Trip found successfully", trip });
+  } catch (error) {
+      console.error('Error fetching trip data:', error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+});
+userRouter.post('/getdocuments', async (req, res) => {
+  try {
+    const { ids } = req.body;
+
+   
+    const documents = await MapData.find({ _id: { $in: ids } });
+
+    if (!documents || documents.length === 0) {
+      return res.status(404).json({ message: 'No documents found for the provided IDs' });
+    }
+
+    res.status(200).json(documents);
+  } catch (error) {
+    console.error('Error fetching documents:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+userRouter.delete('/deletedocuments', async (req, res) => {
+  try {
+    const { ids } = req.body; 
+    console.log(ids,'this is ids showning');
+    
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: 'Invalid or missing IDs' });
+    }
+
+ 
+    const result = await MapData.deleteMany({ _id: { $in: ids } });
+
+ 
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'No documents found for the provided IDs' });
+    }
+
+    res.status(200).json({ message: `${result.deletedCount} document(s) deleted successfully` });
+  } catch (error) {
+    console.error('Error deleting documents:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
